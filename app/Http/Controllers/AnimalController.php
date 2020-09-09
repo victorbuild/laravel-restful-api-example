@@ -72,7 +72,8 @@ class AnimalController extends Controller
      */
     public function update(Request $request, Animal $animal)
     {
-        //
+        $animal->update($request->all());
+        return response($animal, Response::HTTP_OK);
     }
 
     /**
