@@ -41,7 +41,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * 取得會員刊登的動物資源
+     * 會員與動物資源的關聯
      */
     public function animals()
     {
