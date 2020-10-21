@@ -37,6 +37,7 @@ class AnimalController extends Controller
     public function store(Request $request)
     {
         $animal = Animal::create($request->all());
+        $animal = $animal->refresh();
         return response($animal, Response::HTTP_CREATED);
     }
 
