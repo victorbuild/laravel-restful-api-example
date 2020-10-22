@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AnimalCollection;
+use App\Http\Resources\AnimalResource;
 use App\Models\Animal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -37,7 +39,7 @@ class AnimalController extends Controller
         $limit = $request->limit ?? 10; // 未設定預設值為10
 
         // 建立查詢建構器，分段的方式撰寫SQL語句。
-        $query = Animal::query();
+        $query = Animal::query()->with('type');
 
         // 篩選程式邏輯，如果有設定filters參數
         if (isset($request->filters)) {
@@ -66,18 +68,8 @@ class AnimalController extends Controller
 
         // 沒有快取紀錄記住資料，並設定60秒過期，快取名稱使用網址命名。
         return Cache::remember($fullUrl, 60, function () use ($animals) {
-            return response($animals, Response::HTTP_OK);
+            return new AnimalCollection($animals);
         });
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -89,7 +81,7 @@ class AnimalController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'type_id' => 'nullable|integer',        // 允許null或整數
+            'type_id' => 'nullable|exists:types,id',
             'name' => 'required|string|max:255',    // 必填文字最多255字元
             // 允許null或日期格式，使用PHP strtotime檢查傳入的日期字串
             'birthday' => 'nullable|date',
@@ -107,7 +99,8 @@ class AnimalController extends Controller
 
         $animal = Animal::create($request->all());
         $animal = $animal->refresh();
-        return response($animal, Response::HTTP_CREATED);
+
+        return new AnimalResource($animal);
     }
 
     /**
@@ -118,18 +111,7 @@ class AnimalController extends Controller
      */
     public function show(Animal $animal)
     {
-        return response($animal, Response::HTTP_OK);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Animal  $animal
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Animal $animal)
-    {
-        //
+        return new AnimalResource($animal);
     }
 
     /**
@@ -142,7 +124,7 @@ class AnimalController extends Controller
     public function update(Request $request, Animal $animal)
     {
         $this->validate($request, [
-            'type_id' => 'nullable|integer',        // 允許null或整數
+            'type_id' => 'nullable|exists:types,id',
             'name' => 'string|max:255',             // 文字類型最多255字元
             // 允許null並且為日期格式
             'birthday' => 'nullable|date',
@@ -159,7 +141,8 @@ class AnimalController extends Controller
         $request['user_id'] = 1;
 
         $animal->update($request->all());
-        return response($animal, Response::HTTP_OK);
+
+        return new AnimalResource($animal);
     }
 
     /**
