@@ -88,6 +88,23 @@ class AnimalController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'type_id' => 'nullable|integer',        // 允許null或整數
+            'name' => 'required|string|max:255',    // 必填文字最多255字元
+            // 允許null或日期格式，使用PHP strtotime檢查傳入的日期字串
+            'birthday' => 'nullable|date',
+            'area' => 'nullable|string|max:255',    // 允許null或文字最多255字元
+            'fix' => 'required|boolean',            // 必填並且為布林值
+            'description' => 'nullable',            // 允許null
+            'personality' => 'nullable'             // 允許null
+        ]);
+
+        /**
+         * 一般來說不需要會員輸入自己的ID建立動物資源，而是使用登入狀態判斷。
+         * 後續將於身分驗證章節修改這邊的內容，先將user_id強制寫成1寫入資料庫
+         */
+        $request['user_id'] = 1;
+
         $animal = Animal::create($request->all());
         $animal = $animal->refresh();
         return response($animal, Response::HTTP_CREATED);
@@ -124,6 +141,23 @@ class AnimalController extends Controller
      */
     public function update(Request $request, Animal $animal)
     {
+        $this->validate($request, [
+            'type_id' => 'nullable|integer',        // 允許null或整數
+            'name' => 'string|max:255',             // 文字類型最多255字元
+            // 允許null並且為日期格式
+            'birthday' => 'nullable|date',
+            'area' => 'nullable|string|max:255',    // 允許null或文字最多255字元
+            'fix' => 'boolean',                     // 若填寫必須是布林值
+            'description' => 'nullable|string',     // 允許null或文字
+            'personality' => 'nullable|string',     // 允許null或文字
+        ]);
+
+        /**
+         * 先將user_id強制寫成1以免修改到
+         * 後續將於身分驗證章節修改這邊的內容
+         */
+        $request['user_id'] = 1;
+
         $animal->update($request->all());
         return response($animal, Response::HTTP_OK);
     }
