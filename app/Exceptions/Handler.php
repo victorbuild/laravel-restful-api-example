@@ -54,19 +54,19 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if($request->expectsJson()){
+        if ($request->expectsJson()) {
             // 1.Model 找不到資源（上個範例修改為以下程式）
             if ($exception instanceof ModelNotFoundException) {
                 // 呼叫 errorResponse 方法（特徵撰寫的方法）
                 return $this->errorResponse(
-                    '找不到資源', 
+                    '找不到資源',
                     Response::HTTP_NOT_FOUND
                 );
             }
             // 2.網址輸入錯誤（新增判斷）
             if ($exception instanceof NotFoundHttpException) {
                 return $this->errorResponse(
-                    '無法找到此網址', 
+                    '無法找到此網址',
                     Response::HTTP_NOT_FOUND
                 );
             }
