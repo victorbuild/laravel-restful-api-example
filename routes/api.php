@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AnimalController;
+use App\Http\Controllers\Api\Animal\AnimalLikeController;
 use App\Http\Controllers\TypeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,4 +22,9 @@ Route::middleware(['auth:api', 'scope:user-info'])->get('/user', function (Reque
 });
 
 Route::apiResource('animals', AnimalController::class);
+
+Route::apiResource('animals.likes', AnimalLikeController::class)->only([
+    'index', 'store'
+]);
+
 Route::apiResource('types', TypeController::class);
