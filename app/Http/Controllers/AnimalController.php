@@ -88,6 +88,8 @@ class AnimalController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Animal::class);
+
         $this->validate($request, [
             'type_id' => 'nullable|exists:types,id',
             'name' => 'required|string|max:255',    // 必填文字最多255字元
@@ -126,6 +128,8 @@ class AnimalController extends Controller
      */
     public function update(Request $request, Animal $animal)
     {
+        $this->authorize('update', $animal);
+
         $this->validate($request, [
             'type_id' => 'nullable|exists:types,id',
             'name' => 'string|max:255',             // 文字類型最多255字元
@@ -150,6 +154,8 @@ class AnimalController extends Controller
      */
     public function destroy(Animal $animal)
     {
+        $this->authorize('delete', $animal);
+
         $animal->delete();
         return response(null, Response::HTTP_NO_CONTENT);
     }

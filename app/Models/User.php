@@ -13,6 +13,9 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
     use HasApiTokens;
 
+    const ADMIN_USER = 'admin';
+    const MEMBER_USER = 'member';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -46,5 +49,13 @@ class User extends Authenticatable
     public function animals()
     {
         return $this->hasMany('App\Models\Animal', 'user_id', 'id');
+    }
+
+    /**
+     * 是否為管理員（減少偶合使用）
+     */
+    public function isAdmin()
+    {
+        return $this->permission === User::ADMIN_USER;
     }
 }
