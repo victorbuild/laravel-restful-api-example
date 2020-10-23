@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use App\Traits\ApiResponseTrait;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -77,8 +79,29 @@ class Handler extends ExceptionHandler
                     Response::HTTP_METHOD_NOT_ALLOWED
                 );
             }
+            
+            if ($exception instanceof AuthorizationException) {
+                return $this->errorResponse(
+                    $exception->getMessage(),
+                    Response::HTTP_FORBIDDEN
+                );
+            }
         }
 
         return parent::render($request, $exception);
+    }
+
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        // 客戶端請求JSON格式
+        if ($request->expectsJson()) {
+            return $this->errorResponse(
+                $exception->getMessage(),
+                Response::HTTP_UNAUTHORIZED
+            );
+        } else {
+            // 客戶端非請求JSON格式轉回登入畫面
+            return redirect()->guest($exception->redirectTo() ?? route('login'));
+        }
     }
 }
