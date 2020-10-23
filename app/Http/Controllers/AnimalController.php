@@ -7,6 +7,8 @@ use App\Http\Resources\AnimalResource;
 use App\Models\Animal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class AnimalController extends Controller
@@ -101,11 +103,33 @@ class AnimalController extends Controller
             'personality' => 'nullable'             // 允許null
         ]);
 
-        $animal = auth()->user()->animals()->create($request->all());
-        
-        $animal = $animal->refresh();
+        // try包住可能會出錯的程式碼
+        try {
+            // 開始資料庫交易
+            DB::beginTransaction();
+            // 登入會員新增動物，建立會員與動物的關係，返回動物物件
+            $animal = auth()->user()->animals()->create($request->all());
+            // 刷新動物物件(從資料庫讀取完整欄位資料)
+            $animal = $animal->refresh();
+            // 寫入第二張資料表
+            // 製作建立動物資源同時將動物加到我的最愛
+            $animal->likes()->attach(auth()->user()->id);
+            // 提交資料庫，正式寫入資料庫
+            DB::commit();
+            // 回傳資料
+            return new AnimalResource($animal);
+            // 若以上範圍有擷取到例外錯誤，執行catch的程式
+        } catch (\Exception $e) {
+            // 擷取到Exception例外錯誤，上面做了什麼事這裡撰寫復原的程式
+            // 恢復資料庫交易
+            DB::rollback();
 
-        return new AnimalResource($animal);
+            // 或紀錄Log
+            $errorMessage = 'MESSAGE: ' . $e->getMessage();
+            Log::error($errorMessage);
+            // 回傳錯誤訊息並且設定500狀態碼
+            return response(['error' => '程式異常'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
