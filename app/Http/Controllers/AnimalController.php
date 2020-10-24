@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAnimalRequest;
 use App\Http\Resources\AnimalCollection;
 use App\Http\Resources\AnimalResource;
 use App\Models\Animal;
+use App\Services\AnimalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -13,9 +15,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AnimalController extends Controller
 {
+    // class定義屬性預計存放 AnimalService物件。
+    private $animalService;
 
-    public function __construct()
+    public function __construct(AnimalService $animalService)
     {
+        // 外部物件賦予自身類別的屬性
+        $this->animalService = $animalService;
         $this->middleware('client', ['only' => ['index', 'show']]);
         $this->middleware('scopes:create-animals', ['only' => ['store']]);
         $this->middleware('auth:api', ['except' => ['index', 'show']]);
@@ -45,38 +51,9 @@ class AnimalController extends Controller
             return Cache::get($fullUrl);
         }
 
-        // 設定預設值
-        $limit = $request->limit ?? 10; // 未設定預設值為10
+        $animals = $this->animalService->getListData($request);
 
-        // 建立查詢建構器，分段的方式撰寫SQL語句。
-        $query = Animal::query()->with('type');
-
-        // 篩選程式邏輯，如果有設定filters參數
-        if (isset($request->filters)) {
-            $filters = explode(',', $request->filters);
-            foreach ($filters as $key => $filter) {
-                list($key, $value) = explode(':', $filter);
-                $query->where($key, 'like', "%$value%");
-            }
-        }
-
-        // 排列順序
-        if (isset($request->sorts)) {
-            $sorts = explode(',', $request->sorts);
-            foreach ($sorts as $key => $sort) {
-                list($key, $value) = explode(':', $sort);
-                if ($value == 'asc' || $value == 'desc') {
-                    $query->orderBy($key, $value);
-                }
-            }
-        } else {
-            // 將原本的排序方法移至這裡，如果沒有設定條件，預設id大到小
-            $query->orderBy('id', 'desc');
-        }
-
-        $animals = $query->paginate($limit)->appends($request->query());
-
-        // 沒有快取紀錄記住資料，並設定60秒過期，快取名稱使用網址命名。
+        // 沒有快取紀錄記住資料，並設定60秒過期。
         return Cache::remember($fullUrl, 60, function () use ($animals) {
             return new AnimalCollection($animals);
         });
@@ -88,20 +65,9 @@ class AnimalController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreAnimalRequest $request)
     {
         $this->authorize('create', Animal::class);
-
-        $this->validate($request, [
-            'type_id' => 'nullable|exists:types,id',
-            'name' => 'required|string|max:255',    // 必填文字最多255字元
-            // 允許null或日期格式，使用PHP strtotime檢查傳入的日期字串
-            'birthday' => 'nullable|date',
-            'area' => 'nullable|string|max:255',    // 允許null或文字最多255字元
-            'fix' => 'required|boolean',            // 必填並且為布林值
-            'description' => 'nullable',            // 允許null
-            'personality' => 'nullable'             // 允許null
-        ]);
 
         // try包住可能會出錯的程式碼
         try {
