@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1\Type;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\TypeCollection;
 use App\Http\Resources\TypeResource;
 use App\Models\Type;

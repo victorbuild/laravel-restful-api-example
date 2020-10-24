@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Animal;
+namespace App\Http\Controllers\Api\V1\Animal;
 
 use App\Http\Controllers\Controller;
 use App\Models\Animal;

@@ -35,8 +35,8 @@ class AnimalTest extends TestCase
         // 10筆動物資料並隨機配對分類、使用者
         Animal::factory(10)->create();
 
-        // 使用GET請求 api/animals 結果賦予 $response
-        $response = $this->json('GET', 'api/animals');
+        // 使用GET請求 api/v1/animals 結果賦予 $response
+        $response = $this->json('GET', 'api/v1/animals');
         // 設定當測試發生例外錯誤時顯示訊息
         $this->withoutExceptionHandling();
 
@@ -97,7 +97,7 @@ class AnimalTest extends TestCase
         // 請求並傳入資料
         $response = $this->json(
             'POST',
-            'api/animals',
+            'api/v1/animals',
             $formData
         );
 
@@ -116,7 +116,7 @@ class AnimalTest extends TestCase
         // 做什麼事? 請求時並傳入資料
         $response = $this->json(
             'POST',
-            'api/animals',
+            'api/v1/animals',
             [
                 'type_id' => $type->id,
                 'name' => '大黑',
