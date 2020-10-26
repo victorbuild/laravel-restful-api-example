@@ -25,7 +25,6 @@ class AnimalFactory extends Factory
     public function definition()
     {
         return [
-            // numberBetween隨機產生範圍1到3之間的整數。
             'type_id' => Type::all()->random()->id,
             'name' => $this->faker->name, // 隨機名稱
             'birthday' => $this->faker->date(),  // 隨機日期
