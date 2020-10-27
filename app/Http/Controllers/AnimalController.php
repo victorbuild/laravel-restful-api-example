@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAnimalRequest;
+use App\Http\Requests\UpdateAnimalRequest;
 use App\Http\Resources\AnimalCollection;
 use App\Http\Resources\AnimalResource;
 use App\Models\Animal;
@@ -116,20 +117,9 @@ class AnimalController extends Controller
      * @param  \App\Models\Animal  $animal
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Animal $animal)
+    public function update(UpdateAnimalRequest $request, Animal $animal)
     {
         $this->authorize('update', $animal);
-
-        $this->validate($request, [
-            'type_id' => 'nullable|exists:types,id',
-            'name' => 'string|max:255',             // 文字類型最多255字元
-            // 允許null並且為日期格式
-            'birthday' => 'nullable|date',
-            'area' => 'nullable|string|max:255',    // 允許null或文字最多255字元
-            'fix' => 'boolean',                     // 若填寫必須是布林值
-            'description' => 'nullable|string',     // 允許null或文字
-            'personality' => 'nullable|string',     // 允許null或文字
-        ]);
 
         $animal->update($request->all());
 
