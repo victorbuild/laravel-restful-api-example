@@ -46,6 +46,7 @@ class AnimalController extends Controller
         $queryString = http_build_query($queryParams);
         // 組合成完整網址
         $fullUrl = "{$url}?{$queryString}";
+        
         // 使用 Laravel 的快取方法檢查是否有快取紀錄
         if (Cache::has($fullUrl)) {
             // 使用 return 直接回傳快取資料，不做其他程式邏輯
