@@ -30,6 +30,69 @@ class AnimalController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *      path="/api/v1/animals",
+     *      operationId="animalIndex",
+     *      tags={"Animal"},
+     *      summary="取得動物資源列表",
+     *      description="查看動物資源列表",
+     *      security={
+     *         {
+     *              "passport": {}
+     *         }
+     *      },
+     *      @OA\Parameter(
+     *          name="filters",
+     *          description="篩選條件",
+     *          required=false,
+     *          in="query",
+     *          example="name:黑",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="sorts",
+     *          description="排序條件",
+     *          required=false,
+     *          in="query",
+     *          example="name:asc,id:desc",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
+     *          description="設定回傳資料筆數(預設10筆資料)",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="請求成功",
+     *          @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="data",
+     *                      @OA\Items(ref="#/components/schemas/Animal")
+     *                 )
+     *             )
+     *         )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="身分驗證未通過"
+     *      ),
+     *      @OA\Response(
+     *          response=429,
+     *          description="請求次數超過限制"
+     *      )
+     * )
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -63,6 +126,43 @@ class AnimalController extends Controller
     }
 
     /**
+     * @OA\Post(
+     *      path="/api/v1/animals",
+     *      operationId="animalStore",
+     *      tags={"Animal"},
+     *      summary="新增動物資料",
+     *      description="新增動物資料",
+     *      security={
+     *         {
+     *              "passport": {}
+     *         }
+     *      },
+     *      @OA\RequestBody(
+     *           @OA\MediaType(
+     *              mediaType="application/x-www-form-urlencoded",
+     *              @OA\Schema(ref="#/components/schemas/StoreAnimalRequest"),
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="新增成功",
+     *          @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="data",
+     *                      ref="#/components/schemas/Animal"
+     *                 )
+     *             )
+     *         )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="身分驗證未通過"
+     *      )
+     * )
+     *
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -102,6 +202,46 @@ class AnimalController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *      path="/api/v1/animals/{id}",
+     *      operationId="animalShow",
+     *      tags={"Animal"},
+     *      summary="查看單一動物資源",
+     *      description="查看單一動物資源",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Animal id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      security={
+     *         {
+     *              "passport": {}
+     *         }
+     *      },
+     *      @OA\Response(
+     *          response=200,
+     *          description="請求成功",
+     *          @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="data",
+     *                      ref="#/components/schemas/Animal"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="身分驗證未通過"
+     *      ),
+     * )
+     *
      * Display the specified resource.
      *
      * @param  \App\Models\Animal  $animal
@@ -113,6 +253,51 @@ class AnimalController extends Controller
     }
 
     /**
+     * @OA\Patch(
+     *      path="/api/v1/animals/{id}",
+     *      operationId="animalUpdate",
+     *      tags={"Animal"},
+     *      summary="更新動物資料",
+     *      description="更新動物資料",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Animal id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\RequestBody(
+     *           @OA\MediaType(
+     *              mediaType="application/x-www-form-urlencoded",
+     *              @OA\Schema(ref="#/components/schemas/UpdateAnimalRequest"),
+     *          )
+     *      ),
+     *      security={
+     *         {
+     *              "passport": {}
+     *         }
+     *      },
+     *      @OA\Response(
+     *          response=200,
+     *          description="請求成功",
+     *          @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="data",
+     *                      ref="#/components/schemas/Animal"
+     *                 )
+     *             )
+     *         )
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="找不到資源"
+     *       )
+     * )
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -129,6 +314,39 @@ class AnimalController extends Controller
     }
 
     /**
+     * @OA\Delete(
+     *      path="/api/v1/animals/{id}",
+     *      operationId="animalDelete",
+     *      tags={"Animal"},
+     *      summary="刪除動物資料",
+     *      description="刪除動物資料",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Animal id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      security={
+     *         {
+     *              "passport": {}
+     *         }
+     *      },
+     *      @OA\Response(
+     *          response=204,
+     *          description="刪除成功回傳空值",
+     *          @OA\MediaType(
+     *              mediaType="application/json"
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="找不到資源"
+     *       )
+     * )
+     *
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Animal  $animal

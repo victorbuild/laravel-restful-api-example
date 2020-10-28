@@ -1,0 +1,445 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "送養系統API",
+        "description": " Victor RESTful API ",
+        "contact": {
+            "email": "victor@langlangthing.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/animals": {
+            "get": {
+                "tags": [
+                    "Animal"
+                ],
+                "summary": "取得動物資源列表",
+                "description": "查看動物資源列表",
+                "operationId": "animalIndex",
+                "parameters": [
+                    {
+                        "name": "filters",
+                        "in": "query",
+                        "description": "篩選條件",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "name:黑"
+                    },
+                    {
+                        "name": "sorts",
+                        "in": "query",
+                        "description": "排序條件",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "name:asc,id:desc"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "設定回傳資料筆數(預設10筆資料)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "items": {
+                                                "$ref": "#/components/schemas/Animal"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "身分驗證未通過"
+                    },
+                    "429": {
+                        "description": "請求次數超過限制"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Animal"
+                ],
+                "summary": "新增動物資料",
+                "description": "新增動物資料",
+                "operationId": "animalStore",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreAnimalRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "新增成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Animal"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "身分驗證未通過"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/animals/{id}": {
+            "get": {
+                "tags": [
+                    "Animal"
+                ],
+                "summary": "查看單一動物資源",
+                "description": "查看單一動物資源",
+                "operationId": "animalShow",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Animal id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Animal"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "身分驗證未通過"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Animal"
+                ],
+                "summary": "刪除動物資料",
+                "description": "刪除動物資料",
+                "operationId": "animalDelete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Animal id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "刪除成功回傳空值",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "找不到資源"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Animal"
+                ],
+                "summary": "更新動物資料",
+                "description": "更新動物資料",
+                "operationId": "animalUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Animal id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateAnimalRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "請求成功",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Animal"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "找不到資源"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "StoreAnimalRequest": {
+                "required": [
+                    "name",
+                    "fix"
+                ],
+                "properties": {
+                    "type_id": {
+                        "description": "動物的分類ID(需參照types資料表)",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "動物名稱",
+                        "type": "string",
+                        "example": "黑藤"
+                    },
+                    "birthday": {
+                        "description": "生日",
+                        "type": "date",
+                        "example": "2019-01-01"
+                    },
+                    "area": {
+                        "description": "所在區域",
+                        "type": "string",
+                        "example": "台北"
+                    },
+                    "fix": {
+                        "description": "是否結紮(輸入1或0)",
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "description": {
+                        "description": "簡易描述",
+                        "type": "text",
+                        "example": "黑狗，胸前有白毛！宛如台灣黑熊"
+                    },
+                    "personality": {
+                        "description": "動物個性",
+                        "type": "text",
+                        "example": "非常親人！很可愛～"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateAnimalRequest": {
+                "required": [],
+                "properties": {
+                    "type_id": {
+                        "description": "動物的分類ID(需參照types資料表)",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "動物名稱",
+                        "type": "string",
+                        "example": "黑藤"
+                    },
+                    "birthday": {
+                        "description": "生日",
+                        "type": "date",
+                        "example": "2019-01-01"
+                    },
+                    "area": {
+                        "description": "所在區域",
+                        "type": "string",
+                        "example": "台北"
+                    },
+                    "fix": {
+                        "description": "是否結紮(輸入1或0)",
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "description": {
+                        "description": "簡易描述",
+                        "type": "text",
+                        "example": "黑狗，胸前有白毛！宛如台灣黑熊"
+                    },
+                    "personality": {
+                        "description": "動物個性",
+                        "type": "text",
+                        "example": "非常親人！很可愛～"
+                    }
+                },
+                "type": "object"
+            },
+            "Animal": {
+                "required": [
+                    "id",
+                    "name",
+                    "fix",
+                    "user_id"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "type_id": {
+                        "description": "動物的分類ID(需參照types資料表)",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "type_name": {
+                        "description": "關聯type名稱",
+                        "type": "string",
+                        "example": "狗"
+                    },
+                    "name": {
+                        "description": "動物名稱",
+                        "type": "string",
+                        "example": "黑藤"
+                    },
+                    "birthday": {
+                        "description": "生日",
+                        "type": "date",
+                        "example": "2019-01-01"
+                    },
+                    "age": {
+                        "description": "年齡(系統自動計算)",
+                        "type": "string",
+                        "example": "1歲1月"
+                    },
+                    "area": {
+                        "description": "所在區域",
+                        "type": "string",
+                        "example": "台北"
+                    },
+                    "fix": {
+                        "description": "是否結紮(輸入1或0)",
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "description": {
+                        "description": "簡易描述",
+                        "type": "text",
+                        "example": "黑狗，胸前有白毛！宛如台灣黑熊"
+                    },
+                    "personality": {
+                        "description": "動物個性",
+                        "type": "text",
+                        "example": "非常親人！很可愛～"
+                    },
+                    "created_at": {
+                        "description": "建立時間",
+                        "type": "date",
+                        "example": "2020-10-01 00:00:00"
+                    },
+                    "updated_at": {
+                        "description": "更新時間",
+                        "type": "date",
+                        "example": "2020-10-01 00:00:00"
+                    },
+                    "user_id": {
+                        "description": "所屬會員ID",
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "passport": {
+                "type": "oauth2",
+                "description": "Laravel passport oauth2 security.",
+                "in": "header",
+                "scheme": "https",
+                "flows": {
+                    "password": {
+                        "authorizationUrl": "http://127.0.0.1:8000/oauth/authorize",
+                        "tokenUrl": "http://127.0.0.1:8000/oauth/token",
+                        "refreshUrl": "http://127.0.0.1:8000/token/refresh",
+                        "scopes": {
+                            "create-animals": "建立動物資訊",
+                            "user-info": "使用者資訊"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}
